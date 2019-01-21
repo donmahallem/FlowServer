@@ -1,0 +1,84 @@
+{
+    "name": "@donmahallem/flowserver",
+    "version": "0.0.1",
+    "description": "",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "test": "mocha --opts ./test/.mocha.opts src/**/*.spec.ts --config test/config.json",
+        "start": "npm run build:live",
+        "build:live": "nodemon",
+        "build": "tsc",
+        "build:doc": "node ./node_modules/typedoc/bin/typedoc --out ./tt2/ --mode modules --exclude /**/index ./src/",
+        "test-ci_old": "nyc ts-mocha -p tsconfig.json -- --opts mocha.opts",
+        "test-ci": "nyc npm run test"
+    },
+    "author": "",
+    "license": "ISC",
+    "compilerOptions": {
+        "target": "es5",
+        "module": "commonjs",
+        "lib": [
+            "es2017",
+            "es7",
+            "es6",
+            "dom"
+        ],
+        "declaration": true,
+        "outDir": "./dist/",
+        "baseUrl": "./src/",
+        "strict": true,
+        "esModuleInterop": true
+    },
+    "devDependencies": {
+        "@types/chai": "^4.1.7",
+        "@types/mocha": "^5.2.5",
+        "@types/node": "^10.12.18",
+        "@types/set-cookie-parser": "0.0.3",
+        "@types/sinon": "^7.0.3",
+        "chai": "^4.2.0",
+        "mocha": "^5.2.0",
+        "nodemon": "^1.18.0",
+        "nyc": "^13.1.0",
+        "request-debug": "^0.2.0",
+        "sinon": "^7.2.2",
+        "ts-node": "^7.0.1",
+        "typescript": "^3.2.2"
+    },
+    "nyc": {
+        "include": [
+            "src/*.ts",
+            "src/**/*.ts"
+        ],
+        "exclude": [
+            "typings",
+            "src/**/*.spec.ts",
+            "**/*.d.ts"
+        ],
+        "extension": [
+            ".ts"
+        ],
+        "require": [
+            "ts-node/register"
+        ],
+        "reporter": [
+            "json",
+            "html",
+            "text-summary",
+            "lcov"
+        ],
+        "sourceMap": true,
+        "instrument": true,
+        "all": true
+    },
+    "dependencies": {
+        "jsonschema": "^1.2.4",
+        "querystring": "^0.2.0",
+        "request": "^2.88.0",
+        "set-cookie-parser": "^2.2.1"
+    },
+    "files": [
+        "dist/*",
+        "src/*"
+    ]
+}
