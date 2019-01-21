@@ -43,7 +43,7 @@
         "request-debug": "^0.2.0",
         "sinon": "^7.2.3",
         "ts-node": "^7.0.1",
-        "typescript": "^3.2.2"
+        "typescript": "^3.2.4"
     },
     "nyc": {
         "include": [
