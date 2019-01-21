@@ -45,9 +45,10 @@ export class FlowApi {
                 }
             })
         });
-
     }
 
+    public storeCookie() {
+    }
 
     public getActivityTimelineForDay(year: number, month: number, day: number, sampleCount: number = 50000): Promise<request.Response> {
         if (month < 1 || month > 12) {
@@ -66,8 +67,6 @@ export class FlowApi {
             request.get('https://flow.polar.com/api/activity-timeline/load?day=' + _year + '-' + _month + '-' + _day + '&maxSampleCount=' + sampleCount, {
                 jar: this.cookieJar2,
                 headers: {
-                    //'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    //'content-length': querystring.stringify(data).length,
                     'user-agent': 'Mozilla/5.0'
                 }
             }, function (err, httpResponse, body) {
@@ -78,6 +77,5 @@ export class FlowApi {
                 }
             })
         });
-
     }
 }
