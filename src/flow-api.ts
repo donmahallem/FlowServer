@@ -78,13 +78,15 @@ export class FlowApi {
                 jar: this.cookieJar2,
                 gzip: false,
                 headers: {
+                    'accept-language': 'en-US,en;q=0.9,de;q=0.8',
+                    'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'cookie': 'NSC_eob1-qspe-gmpx-mc=ffffffffc3a0947a45525d5f4f58455e445a4a4229a1; timezone=60',
+                    'dnt': '1',
+                    'x-requested-with': 'XMLHttpRequest',
                     'Origin': 'https://flow.polar.com',
                     'Referer': 'https://flow.polar.com/',
                     'Content-Length': querystring.stringify(data).length,
-                    'x-requested-with': 'XMLHttpRequest',
                     'accept': 'application/json',
-                    'accept-language': 'en-US,en;q=0.9',
-                    'cookie': 'NSC_ued1-qspe-gmpx-mc=ffffffffc3a0987945525d5f4f58455e445a4a4229a1',
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
                 }
             }, function (err, httpResponse, body) {
