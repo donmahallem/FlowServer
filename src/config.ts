@@ -12,19 +12,31 @@ export const createSecret = (): string => {
 export interface Config {
     cookiesecret: string;
     port: number;
+    email: string;
+    password: string;
 }
 
 export const getConfig = (): Config => {
     return yargs
         .default({ y: 10 })
         .option('cookiesecret', {
-            alias: 'c',
+            alias: 's',
             default: createSecret(),
             array: false
         })
         .option('port', {
             alias: 'p',
             default: 4200,
+            array: false
+        })
+        .option('password', {
+            alias: 'c',
+            default: "",
+            array: false
+        })
+        .option('email', {
+            alias: 'e',
+            default: "",
             array: false
         })
         .argv;
