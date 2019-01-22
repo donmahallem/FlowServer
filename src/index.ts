@@ -1,14 +1,11 @@
-import { FlowApi } from "./flow-api";
 import { Config, getConfig } from "./config";
-import { FlowApiClient } from "./flow-api-client";
+import * as express from 'express';
+import { apiRoute } from "./routes/api";
 
-const a: FlowApiClient = new FlowApiClient();
+const app: express.Express = express();
 
-console.log(getConfig());
-a.signin(getConfig().email, getConfig().password)
-    .then((res) => {
-        console.log(res.headers, res.statusCode, res.body);
-    })
-    .catch((err: Error) => {
-        console.error(err);
-    })
+app.use('/api', apiRoute);
+
+app.listen(getConfig().port, function () {
+    console.log('Example app listening on port 3000!');
+});
