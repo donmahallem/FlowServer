@@ -4,6 +4,5 @@ import "mocha";
 
 describe("index", () => {
     it("should contain FlowApiValidator", () => {
-        expect(index.FlowApiValidator).to.exist;
     });
 });
