@@ -14,8 +14,7 @@ export const createApiRoute = (config: IConfig): express.Router => {
 
 export const createErrorHandler = (): express.ErrorRequestHandler => {
     return (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-        console.error(err);
-        res.send(JSON.stringify(err));
+        res.status(500).send("Server Error occured");
     };
 }
 
@@ -26,7 +25,8 @@ export const createAngularRoute = (config: IConfig): express.Router => {
         fallthrough: true
     }));
     route.use((req: express.Request, res: express.Response, next: express.NextFunction): void => {
-        res.sendFile(resolve(join(config.general.static_files, "index.html")));
+        res.status(404)
+            .sendFile(resolve(join(config.general.static_files, "index.html")));
     });
     return route;
 };
