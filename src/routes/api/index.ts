@@ -1,13 +1,17 @@
 import * as express from 'express';
-import { flowApiRoute } from './flow';
+import { createFlowApiRoute } from './flow';
 import { IConfig } from '../../config';
 import { join, resolve } from 'path';
+import * as bodyParser from 'body-parser';
+import { createGoogleApiRoute } from './google';
 
 export const createApiRoute = (config: IConfig): express.Router => {
     const route: express.Router = express.Router({
         caseSensitive: true
     });
-    route.use("/flow", flowApiRoute)
+    route.use(bodyParser.json());
+    route.use("/flow", createFlowApiRoute(config));
+    route.use("/google", createGoogleApiRoute(config));
 
     return route;
 };
