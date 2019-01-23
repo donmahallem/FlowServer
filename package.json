@@ -75,8 +75,7 @@
         "express": "^4.16.4",
         "express-session": "^1.15.6",
         "jsonschema": "^1.2.4",
-        "nconf": "^0.10.0",
-        "yargs": "^12.0.5"
+        "nconf": "^0.10.0"
     },
     "files": [
         "dist/*",

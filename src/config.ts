@@ -1,4 +1,3 @@
-import * as yargs from 'yargs';
 import { randomBytes } from 'crypto';
 import * as nconf from 'nconf';
 export const createSecret = (): string => {
