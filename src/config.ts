@@ -11,6 +11,7 @@ export interface IConfig {
         secret: string;
         host: string;
         localhost_only: boolean;
+        static_files: string;
     },
     google: {
         client_id: string;
@@ -22,27 +23,6 @@ export interface IConfig {
     }
 }
 
-nconf
-    .defaults({
-        flow: {
-
-        }
-    })
-    .argv({
-        "x": {
-            alias: 'example',
-            describe: 'Example description for usage generation',
-            demand: true,
-            default: 'some-value',
-            parseValues: true,
-            transform: function (obj) {
-                if (obj.key === 'foo') {
-                    obj.value = 'baz';
-                }
-                return obj;
-            }
-        }
-    });
 export const getConfig = (): IConfig => {
     const initialConf: nconf.Provider = new nconf.Provider();
     initialConf
@@ -64,7 +44,8 @@ export const getConfig = (): IConfig => {
         .required(["google:client_id",
             "google:client_secret",
             "flow:email",
-            "flow:password"]);
+            "flow:password",
+            "general:static_files"]);
     return {
         flow: {
             email: initialConf.get("flow:email"),
@@ -75,6 +56,7 @@ export const getConfig = (): IConfig => {
             host: initialConf.get("general:host"),
             localhost_only: initialConf.get("general:localhost_only"),
             secret: initialConf.get("general:secret"),
+            static_files: initialConf.get("general:static_files")
         },
         google: {
             client_secret: initialConf.get("google:client_secret"),
