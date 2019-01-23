@@ -9,6 +9,6 @@
     "exec": "ts-node ./src/index.ts",
     "args": [
         "--config",
-        "config.json"
+        "testconfig.json"
     ]
 }
