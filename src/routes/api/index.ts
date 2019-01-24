@@ -12,7 +12,12 @@ export const createApiRoute = (config: IConfig): express.Router => {
     route.use(bodyParser.json());
     route.use("/flow", createFlowApiRoute(config));
     route.use("/google", createGoogleApiRoute(config));
-
+    route.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+        res.status(404)
+            .json({
+                error: "Unknown route"
+            });
+    });
     return route;
 };
 
