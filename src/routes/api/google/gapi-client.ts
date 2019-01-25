@@ -9,9 +9,8 @@ export class SampleClient {
     private _options: any;
     private oAuth2Client: OAuth2Client;
     private authorizeUrl: string;
-    constructor(options, config: IConfig) {
-        this._options = options || { scopes: [] };
-        const redirectUri = "";// keys.redirect_uris[keys.redirect_uris.length - 1];
+    constructor(config: IConfig) {
+        /*const redirectUri = "";// keys.redirect_uris[keys.redirect_uris.length - 1];
         const parts: URL = new URL(redirectUri);
         if (
             redirectUri.length === 0 ||
@@ -21,12 +20,12 @@ export class SampleClient {
         ) {
             throw new Error("invalidRedirectUri");
         }
-
+*/
         // create an oAuth client to authorize the API call
         this.oAuth2Client = new OAuth2Client(
             config.google.client_id,
             config.google.client_secret,
-            redirectUri
+            config.google.redirect_url
         );
     }
 

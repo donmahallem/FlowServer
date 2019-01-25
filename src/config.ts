@@ -15,6 +15,7 @@ export interface IConfig {
     google: {
         client_id: string;
         client_secret: string;
+        redirect_url: string;
     },
     flow: {
         email: string;
@@ -42,6 +43,7 @@ export const getConfig = (): IConfig => {
         })
         .required(["google:client_id",
             "google:client_secret",
+            "google:redirect_url",
             "flow:email",
             "flow:password",
             "general:static_files"]);
@@ -59,7 +61,8 @@ export const getConfig = (): IConfig => {
         },
         google: {
             client_secret: initialConf.get("google:client_secret"),
-            client_id: initialConf.get("google:client_id")
+            client_id: initialConf.get("google:client_id"),
+            redirect_url: initialConf.get("google:redirect_url")
         }
     }
 }
