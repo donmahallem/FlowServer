@@ -1,13 +1,13 @@
-
-import { } from 'googleapis';
-
-import { drive_v3, GoogleApis, google, fitness_v1 } from 'googleapis';
+import { fitness_v1 } from 'googleapis';
 import { URL } from 'url';
+import {
+    OAuth2Client
+} from 'google-auth-library';
 import { IConfig } from '../../../config';
 export class SampleClient {
 
     private _options: any;
-    private oAuth2Client: google.auth.OAuth2;
+    private oAuth2Client: OAuth2Client;
     private authorizeUrl: string;
     constructor(options, config: IConfig) {
         this._options = options || { scopes: [] };
@@ -23,14 +23,14 @@ export class SampleClient {
         }
 
         // create an oAuth client to authorize the API call
-        this.oAuth2Client = new google.auth.OAuth2(
+        this.oAuth2Client = new OAuth2Client(
             config.google.client_id,
             config.google.client_secret,
             redirectUri
         );
     }
 
-    public get client(): google.auth.OAuth2 {
+    public get client(): OAuth2Client {
         return this.oAuth2Client;
     }
 }
