@@ -3,8 +3,8 @@ import { SampleClient } from './gapi-client';
 import { IConfig } from '../../../config';
 import { GetTokenResponse, OAuth2Client, CodeChallengeMethod, GenerateAuthUrlOpts } from 'google-auth-library/build/src/auth/oauth2client';
 import { Credentials } from 'google-auth-library';
-import { AxiosPromise } from 'axios';
 import * as crypto from 'crypto';
+import { GaxiosPromise } from 'gaxios';
 
 export class Gapi {
 
@@ -63,7 +63,7 @@ export class Gapi {
         });
     }
 
-    public createDataSource(creds: Credentials): AxiosPromise<any> {
+    public createDataSource(creds: Credentials): GaxiosPromise<any> {
         const client: OAuth2Client = new OAuth2Client();
         client.credentials = creds;
         const fitClient: fitness_v1.Fitness = new fitness_v1.Fitness({

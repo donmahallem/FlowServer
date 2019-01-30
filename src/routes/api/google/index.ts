@@ -93,5 +93,9 @@ export const createGoogleApiRoute = (config: IConfig): express.Router => {
             });
         }
     });
+
+    apiRoute.get("/fit/datasources",(req,res,next)=>{
+        res.status(401).json({redir:true});
+    })
     return apiRoute;
 }
