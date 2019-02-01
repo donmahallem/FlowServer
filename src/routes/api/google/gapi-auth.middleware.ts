@@ -1,17 +1,9 @@
 import { Request, NextFunction, Response } from 'express';
 import { IConfig } from '../../../config';
 import { createCipher, createDecipher, Cipher, Decipher } from 'crypto';
-import { GapiAuthRequest } from './gapi-auth.request';
 import { create } from 'domain';
 import * as jwt from 'jsonwebtoken';
 import { GapiAuthHelper } from './gapi-auth-helper';
-export const createGapiAuthMiddleware = (config: IConfig) => {
-    return (req: GapiAuthRequest, res: Response, next: NextFunction) => {
-        req.gapi = new GapiAuthInstance(res, config);
-
-    }
-};
-
 export class GapiAuthInstance {
     private readonly COOKIE_NAME: string = "gsession";
     private mAccessToken: string;

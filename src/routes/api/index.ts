@@ -23,7 +23,9 @@ export const createApiRoute = (config: IConfig): express.Router => {
 
 export const createErrorHandler = (): express.ErrorRequestHandler => {
     return (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-        res.status(500).send("Server Error occured");
+        res.status(500).json({
+            error: "Server Error occured"
+        });
     };
 }
 
