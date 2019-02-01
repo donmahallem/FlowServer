@@ -5,7 +5,13 @@ import { GetTokenResponse } from 'google-auth-library/build/src/auth/oauth2clien
 import { Schema, Validator, ValidatorResult } from 'jsonschema';
 import * as jwt from 'jsonwebtoken';
 
-
+declare global {
+    namespace Express {
+        interface Request {
+            gapi: GapiInfo
+        }
+    }
+}
 const exchangeCodeSchema: Schema = {
     type: "object",
     properties: {
@@ -42,14 +48,10 @@ export interface GapiInfo {
     uid?: string;
 }
 
-export interface GapiRequest extends express.Request {
-    gapi: GapiInfo;
-}
-
 export const regexBearerToken: RegExp = new RegExp('^bearer\\ .*$', 'i');
 
 export const createGoogleApiAuthRoute = (config: IConfig): express.RequestHandler => {
-    return (req: GapiRequest, res: express.Response, next: express.NextFunction) => {
+    return (req: express.Request, res: express.Response, next: express.NextFunction) => {
         req.gapi = {
             signedIn: false
         }
@@ -86,6 +88,9 @@ export const createGoogleApiRoute = (config: IConfig): express.Router => {
     apiRoute.use(createGoogleApiAuthRoute(config));
     apiRoute.get('/auth/signin', (req, res, next) => {
         res.redirect(aa.generateAuthUrl());
+    });
+    apiRoute.get('/auth/url', (req, res, next) => {
+        res.json({ url: aa.generateAuthUrl() });
     });
     apiRoute.post('/auth/code', (req, res, next) => {
         const validator: Validator = new Validator();
