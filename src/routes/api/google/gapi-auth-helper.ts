@@ -5,7 +5,7 @@ import { decode } from "jsonwebtoken";
 export class GapiAuthHelper {
     public static convertCredentialsToToken(creds: Credentials, config: IConfig) {
         return {
-            access_token
+            access_token: ""
         }
     }
     public static encryptData(data: string, secret: string) {

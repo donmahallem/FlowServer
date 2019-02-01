@@ -4,6 +4,7 @@ import { createCipher, createDecipher, Cipher, Decipher } from 'crypto';
 import { GapiAuthRequest } from './gapi-auth.request';
 import { create } from 'domain';
 import * as jwt from 'jsonwebtoken';
+import { GapiAuthHelper } from './gapi-auth-helper';
 export const createGapiAuthMiddleware = (config: IConfig) => {
     return (req: GapiAuthRequest, res: Response, next: NextFunction) => {
         req.gapi = new GapiAuthInstance(res, config);
@@ -37,8 +38,8 @@ export class GapiAuthInstance {
 
     public updateToken(): void {
         const jwtToken: string = jwt.sign({
-            access_token: this.encryptData(this.mAccessToken),
-            refresh_token: this.encryptData(this.mRefreshToken)
+            access_token: GapiAuthHelper.encryptData(this.mAccessToken, this.mConfig.general.secret),
+            refresh_token: GapiAuthHelper.encryptData(this.mRefreshToken, this.mConfig.general.secret)
         }, this.mConfig.general.secret, {
                 expiresIn: "1h",
                 issuer: this.mConfig.general.host
