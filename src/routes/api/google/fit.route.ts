@@ -5,49 +5,6 @@ import { GetTokenResponse } from 'google-auth-library/build/src/auth/oauth2clien
 import { Schema, Validator, ValidatorResult } from 'jsonschema';
 import * as jwt from 'jsonwebtoken';
 
-declare global {
-    namespace Express {
-        interface Request {
-            gapi: GapiInfo
-        }
-    }
-}
-const exchangeCodeSchema: Schema = {
-    type: "object",
-    properties: {
-        code: {
-            type: "string",
-        },
-        scope: {
-            type: "array",
-            minItems: 1,
-            items: {
-                type: "string"
-            }
-        }
-    },
-    required: ["scope", "code"]
-};
-const exchangeCodeSchema2: Schema = {
-    type: "object",
-    properties: {
-        code: {
-            type: "string",
-        },
-        scope: {
-            type: "string"
-        }
-    },
-    required: ["scope", "code"]
-};
-
-export interface GapiInfo {
-    signedIn: boolean;
-    access_token?: string;
-    refresh_token?: string;
-    uid?: string;
-}
-
 export const createUrlRequestHandler = (gapiClient: Gapi): express.RequestHandler => {
     return (req: express.Request, res: express.Response, next: express.NextFunction) => {
         res.json({ url: gapiClient.generateAuthUrl() });

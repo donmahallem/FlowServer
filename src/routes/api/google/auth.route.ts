@@ -10,13 +10,6 @@ import { Config } from '../../../config';
 import { JwtHelper } from '../../../jwt-helper';
 import { GapiJwtToken } from './gapi-jwt-token';
 
-declare global {
-    namespace Express {
-        interface Request {
-            gapi: GapiInfo
-        }
-    }
-}
 const exchangeCodeSchema: Schema = {
     type: "object",
     properties: {
@@ -45,13 +38,6 @@ const exchangeCodeSchema2: Schema = {
     },
     required: ["scope", "code"]
 };
-
-export interface GapiInfo {
-    signedIn: boolean;
-    access_token?: string;
-    refresh_token?: string;
-    uid?: string;
-}
 
 export const createUrlRequestHandler = (gapiClient: Gapi): express.RequestHandler => {
     return (req, res, next) => {
