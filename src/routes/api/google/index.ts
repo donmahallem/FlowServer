@@ -4,6 +4,8 @@ import { Gapi } from './gapi';
 import { GetTokenResponse } from 'google-auth-library/build/src/auth/oauth2client';
 import { Schema, Validator, ValidatorResult } from 'jsonschema';
 import * as jwt from 'jsonwebtoken';
+import { createAuthRoute } from './auth.route';
+import { createFitRoute } from './fit.route';
 
 declare global {
     namespace Express {
@@ -86,68 +88,7 @@ export const createGoogleApiRoute = (config: IConfig): express.Router => {
     const apiRoute: express.Router = express.Router();
     const aa = new Gapi(config);
     apiRoute.use(createGoogleApiAuthRoute(config));
-    apiRoute.get('/auth/signin', (req, res, next) => {
-        res.redirect(aa.generateAuthUrl());
-    });
-    apiRoute.get('/auth/url', (req, res, next) => {
-        res.json({ url: aa.generateAuthUrl() });
-    });
-    apiRoute.post('/auth/code', (req, res, next) => {
-        const validator: Validator = new Validator();
-        const validatorResult: ValidatorResult = validator.validate(req.body, exchangeCodeSchema);
-        console.log("validate result", validatorResult.valid);
-        if (validatorResult.valid) {
-            aa.exchangeCode(req.body.code)
-                .then((resp: GetTokenResponse) => {
-                    console.log("token response", resp.tokens);
-                    if (resp.res.status == 200) {
-                        res.status(200).json(resp.tokens);
-                    } else {
-                        res.status(resp.res.status)
-                            .json({
-                                error: "An error occured"
-                            });
-                    }
-                })
-                .catch((err: any) => {
-                    res.status(400).send("error");
-                });
-        } else {
-            res.status(400).json({
-                error: "Invalid Request"
-            });
-        }
-    });
-    apiRoute.get('/auth/code', (req, res, next) => {
-        const validator: Validator = new Validator();
-        const validatorResult: ValidatorResult = validator.validate(req.query, exchangeCodeSchema2);
-        console.log("validate result", validatorResult.valid, validatorResult.errors);
-        if (validatorResult.valid) {
-            aa.exchangeCode(req.query.code)
-                .then((resp: GetTokenResponse) => {
-                    console.log("token response", resp.tokens);
-                    if (resp.res.status == 200) {
-                        res.status(200).json(resp.tokens);
-                    } else {
-                        res.status(resp.res.status)
-                            .json({
-                                error: "An error occured"
-                            });
-                    }
-                })
-                .catch((err: any) => {
-                    console.log(err);
-                    res.status(400).send("error");
-                });
-        } else {
-            res.status(400).json({
-                error: "Invalid Request"
-            });
-        }
-    });
-
-    apiRoute.get("/fit/datasources", (req, res, next) => {
-        res.status(401).json({ redir: true });
-    })
+    apiRoute.use('/auth', createAuthRoute(aa));
+    apiRoute.use('/fit', createFitRoute(aa));
     return apiRoute;
 }
