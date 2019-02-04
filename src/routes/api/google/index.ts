@@ -3,10 +3,12 @@ import { IConfig } from '../../../config';
 import { Gapi } from './gapi';
 import { GetTokenResponse } from 'google-auth-library/build/src/auth/oauth2client';
 import { Schema, Validator, ValidatorResult } from 'jsonschema';
-import * as jwt from 'jsonwebtoken';
 import { createAuthRoute } from './auth.route';
 import { createFitRoute } from './fit.route';
-
+import { JwtHelper } from '../../../jwt-helper';
+import { VerifyErrors } from 'jsonwebtoken';
+import { GapiJwtToken } from './gapi-jwt-token';
+import { Credentials } from 'google-auth-library';
 declare global {
     namespace Express {
         interface Request {
@@ -45,9 +47,7 @@ const exchangeCodeSchema2: Schema = {
 
 export interface GapiInfo {
     signedIn: boolean;
-    access_token?: string;
-    refresh_token?: string;
-    uid?: string;
+    credentials?: Credentials;
 }
 
 export const regexBearerToken: RegExp = new RegExp('^bearer\\ .*$', 'i');
@@ -60,21 +60,15 @@ export const createGoogleApiAuthRoute = (config: IConfig): express.RequestHandle
         if (req.headers['authorization']) {
             const authHeader: string = req.headers['authorization'];
             if (regexBearerToken.test(authHeader)) {
-                jwt.verify(authHeader.split(' ')[1],
-                    config.general.secret,
-                    {
-                        issuer: config.general.host
-                    }, (err: jwt.VerifyErrors, decoded: string | Object) => {
-                        if (err) {
-                            req.gapi = {
-                                signedIn: false
-                            }
-                        } else {
-                            req.gapi = {
-                                signedIn: true
-                            }
-                        }
+                JwtHelper.verify(authHeader.split(' ')[1])
+                    .then((decoded: GapiJwtToken) => {
+                        req.gapi = {
+                            signedIn: true,
+                            credentials: decoded.gapi
+                        };
                         next();
+                    }).catch((err: VerifyErrors) => {
+                        next(err);
                     });
                 return;
             }
