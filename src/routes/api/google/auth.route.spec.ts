@@ -41,7 +41,7 @@ describe('/routes/api/google/auth.route.ts', () => {
             expect(responseSpy.json.callCount).to.equal(0);
         });
     });
-    describe('createAuthRoute()', () => {
+    describe('createAuthRoute(Gapi)', () => {
 
         let routerStub: sinon.SinonStub;
         let postSpy, getSpy: sinon.SinonSpy;
@@ -91,6 +91,33 @@ describe('/routes/api/google/auth.route.ts', () => {
             expect(getSpy.callCount).to.equal(1);
             expect(getSpy.getCall(0).args).to.deep.equal(['/url', createUrlResponse]);
             expect(postSpy.getCall(0).args).to.deep.equal(['/code', createPostCodeResponse]);
+        });
+    });
+    describe('createPostCodeRequestHandler(Gapi)', () => {
+        let testSandbox: sinon.SinonSandbox;
+        let gapiStubInstance: sinon.SinonStubbedInstance<Gapi>;
+        let nextSpy: sinon.SinonSpy;
+        before(() => {
+            testSandbox = sinon.createSandbox();
+            gapiStubInstance = testSandbox.createStubInstance(Gapi);
+            nextSpy = testSandbox.spy();
+        });
+
+        afterEach(() => {
+            testSandbox.reset();
+        });
+
+        after(() => {
+            testSandbox.restore();
+        });
+
+        it('should not work with failing validator', () => {
+            const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
+            const reqObject: any = {
+                body: 'no data in body'
+            };
+            expect(reqHandler(reqObject, null, nextSpy)).to.be.undefined;
+            expect(nextSpy.callCount).to.equal(1);
         });
     });
 });

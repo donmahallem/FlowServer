@@ -10,7 +10,7 @@ import { Config } from '../../../config';
 import { JwtHelper } from '../../../jwt-helper';
 import { GapiJwtToken } from './gapi-jwt-token';
 
-const exchangeCodeSchema: Schema = {
+export const exchangeCodeSchema: Schema = {
     type: 'object',
     properties: {
         code: {
@@ -22,18 +22,6 @@ const exchangeCodeSchema: Schema = {
             items: {
                 type: 'string'
             }
-        }
-    },
-    required: ['scope', 'code']
-};
-const exchangeCodeSchema2: Schema = {
-    type: 'object',
-    properties: {
-        code: {
-            type: 'string',
-        },
-        scope: {
-            type: 'string'
         }
     },
     required: ['scope', 'code']
