@@ -200,6 +200,30 @@ describe('/routes/api/google/auth.route.ts', () => {
                 });
                 expect(reqHandler.bind(reqHandler, reqObject, null, nextSpy)).to.not.throw();
             });
+            it('should succeed', (done) => {
+                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
+                const teststring: string = "jasdfadsjafjaskdfkasnjf aosdfjn aws0irfj 0wru ";
+                jwtSignStub.resolves(teststring);
+                const testResponse: any = {
+                    json: sinon.stub()
+                };
+                gapiStubInstance.exchangeCode.resolves(<any>{ res: { status: 200 } });
+                testResponse.json.callsFake((...args: any) => {
+                    console.log("JAJJ");
+                    expect(args.length).to.equal(1);
+                    expect(args).to.deep.equal([{
+                        token: teststring
+                    }]);
+                    console.log("JAJJ");
+                    expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, 'exchangeCode should be called just once');
+                    expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], 'exchangeCode should be called with the requestBody');
+                    //expect(nextSpy.callCount).to.equal(1, 'nextSpy should be called once');
+                    expect(jwtSignStub.callCount).to.equal(1, 'jwtSign should not be called at all');
+                    console.log("JAJJ");
+                    done();
+                });
+                expect(reqHandler.bind(reqHandler, reqObject, testResponse, null)).to.not.throw();
+            });
         });
     });
 });
