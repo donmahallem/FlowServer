@@ -13,7 +13,12 @@ export class RouteHelper {
         return (req: express.Request, res: express.Response, next: NextFunction) => {
             prom(req)
                 .then((reg: RouteHelperResponse<T>) => {
-
+                    if (reg.code) {
+                        res.status(reg.code);
+                    } else {
+                        res.status(200);
+                    }
+                    res.json(reg.body);
                 })
                 .catch((err: ServerError | any) => {
                     if (err instanceof ServerError) {
