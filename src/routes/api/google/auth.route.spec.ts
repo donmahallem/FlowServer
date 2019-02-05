@@ -162,7 +162,7 @@ describe('/routes/api/google/auth.route.ts', () => {
                     expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, 'exchangeCode should be called just once');
                     expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], 'exchangeCode should be called with the requestBody');
                     expect(nextSpy.callCount).to.equal(1, 'nextSpy should be called once');
-                    expect(jwtSignStub.callCount).to.equal(0, 'jwtVerify should not be called at all');
+                    expect(jwtSignStub.callCount).to.equal(0, 'jwtSign should not be called at all');
                     done();
                 });
                 expect(reqHandler.bind(reqHandler, reqObject, null, nextSpy)).to.not.throw();
@@ -179,7 +179,23 @@ describe('/routes/api/google/auth.route.ts', () => {
                     expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, 'exchangeCode should be called just once');
                     expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], 'exchangeCode should be called with the requestBody');
                     expect(nextSpy.callCount).to.equal(1, 'nextSpy should be called once');
-                    expect(jwtSignStub.callCount).to.equal(0, 'jwtVerify should not be called at all');
+                    expect(jwtSignStub.callCount).to.equal(0, 'jwtSign should not be called at all');
+                    done();
+                });
+                expect(reqHandler.bind(reqHandler, reqObject, null, nextSpy)).to.not.throw();
+            });
+            it('should fail on jwtSignFail', (done) => {
+                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
+                jwtSignStub.rejects(testError);
+                gapiStubInstance.exchangeCode.resolves(<any>{ res: { status: 200 } });
+                nextSpy.callsFake((...args: any) => {
+                    expect(args.length).to.equal(1);
+                    expect(args[0]).to.be.instanceOf(Error);
+                    expect(args[0].message).equal('test error');
+                    expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, 'exchangeCode should be called just once');
+                    expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], 'exchangeCode should be called with the requestBody');
+                    expect(nextSpy.callCount).to.equal(1, 'nextSpy should be called once');
+                    expect(jwtSignStub.callCount).to.equal(1, 'jwtSign should not be called at all');
                     done();
                 });
                 expect(reqHandler.bind(reqHandler, reqObject, null, nextSpy)).to.not.throw();
