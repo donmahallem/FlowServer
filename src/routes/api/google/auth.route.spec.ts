@@ -6,6 +6,9 @@ import * as testObject from './auth.route';
 import * as express from 'express';
 import * as sinon from 'sinon';
 import { Gapi } from './gapi';
+import * as jsonschema from 'jsonschema';
+import { JwtHelper } from '../../../jwt-helper';
+import { ServerError } from '../../../server-error';
 
 describe('/routes/api/google/auth.route.ts', () => {
     describe('createUrlRequestHandler(Gapi)', () => {
@@ -47,6 +50,7 @@ describe('/routes/api/google/auth.route.ts', () => {
         let postSpy, getSpy: sinon.SinonSpy;
         let createPostCodeRequestHandlerStub,
             createUrlRequestHandlerStub: sinon.SinonStub;
+        let fakeRouter: any;
         before(() => {
             routerStub = sinon.stub(express, 'Router');
             createPostCodeRequestHandlerStub = sinon.stub(testObject, 'createPostCodeRequestHandler');
@@ -56,10 +60,11 @@ describe('/routes/api/google/auth.route.ts', () => {
         beforeEach(() => {
             postSpy = sinon.spy();
             getSpy = sinon.spy();
-            routerStub.returns({
+            fakeRouter = {
                 post: postSpy,
                 get: getSpy
-            });
+            };
+            routerStub.returns(fakeRouter);
         });
 
         afterEach(() => {
@@ -87,6 +92,7 @@ describe('/routes/api/google/auth.route.ts', () => {
             createPostCodeRequestHandlerStub.returns(createPostCodeResponse);
             createUrlRequestHandlerStub.returns(createUrlResponse);
             const resultingRoute: express.Router = testObject.createAuthRoute(testGapi);
+            expect(resultingRoute).to.deep.equal(fakeRouter);
             expect(postSpy.callCount).to.equal(1);
             expect(getSpy.callCount).to.equal(1);
             expect(getSpy.getCall(0).args).to.deep.equal(['/url', createUrlResponse]);
@@ -96,28 +102,89 @@ describe('/routes/api/google/auth.route.ts', () => {
     describe('createPostCodeRequestHandler(Gapi)', () => {
         let testSandbox: sinon.SinonSandbox;
         let gapiStubInstance: sinon.SinonStubbedInstance<Gapi>;
-        let nextSpy: sinon.SinonSpy;
+        let nextSpy: sinon.SinonStub;
+        let validatorStubInstance: sinon.SinonStubbedInstance<jsonschema.Validator>;
+        let validatorStub: sinon.SinonStub;
+
+        const reqObject: any = {
+            body: {
+                code: 'asdfjas dfjnoaösdjfnmöalsdfjnaösdfjasdf'
+            }
+        };
         before(() => {
             testSandbox = sinon.createSandbox();
             gapiStubInstance = testSandbox.createStubInstance(Gapi);
-            nextSpy = testSandbox.spy();
+            nextSpy = testSandbox.stub();
+            validatorStubInstance = testSandbox.createStubInstance(jsonschema.Validator);
+
         });
 
+        beforeEach(() => {
+            validatorStub = testSandbox.stub(jsonschema, 'Validator').callsFake((args) => {
+                return validatorStubInstance;
+            });
+        })
+
         afterEach(() => {
+            expect(validatorStubInstance.validate.callCount).to.equal(1);
+            expect(validatorStubInstance.validate.getCall(0).args).to.deep.equal([reqObject.body, testObject.exchangeCodeSchema]);
             testSandbox.reset();
+            validatorStub.restore();
         });
 
         after(() => {
             testSandbox.restore();
         });
-
-        it('should not work with failing validator', () => {
-            const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
-            const reqObject: any = {
-                body: 'no data in body'
-            };
-            expect(reqHandler(reqObject, null, nextSpy)).to.be.undefined;
-            expect(nextSpy.callCount).to.equal(1);
+        describe('body validates', () => {
+            beforeEach(() => {
+                validatorStubInstance.validate.returns(<any>{ valid: false });
+            });
+            it('should not work with failing validator', () => {
+                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
+                expect(reqHandler(reqObject, null, nextSpy)).to.be.undefined;
+                expect(nextSpy.callCount).to.equal(1);
+            });
+        });
+        describe('body does validate', () => {
+            let jwtSignStub: sinon.SinonStub;
+            before(() => {
+                jwtSignStub = sinon.stub(JwtHelper, 'sign');
+            });
+            beforeEach(() => {
+                validatorStubInstance.validate.returns(<any>{ valid: true });
+            });
+            it('should fail on exchangeCode rejection', (done) => {
+                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
+                const testError: Error = new Error("test error");
+                jwtSignStub.rejects(testError);
+                gapiStubInstance.exchangeCode.rejects(testError);
+                nextSpy.callsFake(() => {
+                    expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, 'exchangeCode should be called just once');
+                    expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], 'exchangeCode should be called with the requestBody');
+                    expect(nextSpy.callCount).to.equal(1, 'nextSpy should be called once');
+                    expect(jwtSignStub.callCount).to.equal(0, 'jwtVerify should not be called at all');
+                    done();
+                });
+                expect(reqHandler.bind(reqHandler, reqObject, null, nextSpy)).to.not.throw();
+            });
+            it('should fail on exchangeCode returning non 200 response code', (done) => {
+                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
+                const testError: Error = new Error("test error");
+                jwtSignStub.rejects(testError);
+                gapiStubInstance.exchangeCode.resolves(<any>{ res: { status: 4923 } });
+                nextSpy.callsFake((...args: any) => {
+                    expect(args.length).to.equal(1);
+                    expect(args[0]).to.be.instanceOf(ServerError);
+                    expect(args[0].message).equal('Could not exchange code');
+                    expect(args[0].code).equal(4923);
+                    expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, 'exchangeCode should be called just once');
+                    expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], 'exchangeCode should be called with the requestBody');
+                    expect(nextSpy.callCount).to.equal(1, 'nextSpy should be called once');
+                    expect(jwtSignStub.callCount).to.equal(0, 'jwtVerify should not be called at all');
+                    done();
+                });
+                expect(reqHandler.bind(reqHandler, reqObject, null, nextSpy)).to.not.throw();
+            });
         });
     });
 });

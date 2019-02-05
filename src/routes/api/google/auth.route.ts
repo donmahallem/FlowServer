@@ -38,14 +38,14 @@ export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestH
     return (req, res, next) => {
         const validator: Validator = new Validator();
         const validatorResult: ValidatorResult = validator.validate(req.body, exchangeCodeSchema);
-        if (validatorResult.valid) {
+        if (validatorResult.valid === true) {
             gapiClient.exchangeCode(req.body.code)
                 .then((tokenResponse: GetTokenResponse) => {
                     if (tokenResponse.res.status === 200) {
                         const data: GapiJwtToken = { gapi: tokenResponse.tokens };
                         return JwtHelper.sign(data);
                     } else {
-                        throw new ServerError('Could not exchange code', tokenResponse.res.status);
+                        return Promise.reject(new ServerError('Could not exchange code', tokenResponse.res.status));
                     }
                 })
                 .then((jwt: string) => {
