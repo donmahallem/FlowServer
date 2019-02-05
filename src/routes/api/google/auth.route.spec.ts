@@ -147,6 +147,7 @@ describe('/routes/api/google/auth.route.ts', () => {
         });
         describe('body does validate', () => {
             let jwtSignStub: sinon.SinonStub;
+            const testError: Error = new Error('test error');
             before(() => {
                 jwtSignStub = sinon.stub(JwtHelper, 'sign');
             });
@@ -155,7 +156,6 @@ describe('/routes/api/google/auth.route.ts', () => {
             });
             it('should fail on exchangeCode rejection', (done) => {
                 const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
-                const testError: Error = new Error("test error");
                 jwtSignStub.rejects(testError);
                 gapiStubInstance.exchangeCode.rejects(testError);
                 nextSpy.callsFake(() => {
@@ -169,7 +169,6 @@ describe('/routes/api/google/auth.route.ts', () => {
             });
             it('should fail on exchangeCode returning non 200 response code', (done) => {
                 const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(<any>gapiStubInstance);
-                const testError: Error = new Error("test error");
                 jwtSignStub.rejects(testError);
                 gapiStubInstance.exchangeCode.resolves(<any>{ res: { status: 4923 } });
                 nextSpy.callsFake((...args: any) => {
