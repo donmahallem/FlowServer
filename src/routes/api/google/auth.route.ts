@@ -11,32 +11,32 @@ import { JwtHelper } from '../../../jwt-helper';
 import { GapiJwtToken } from './gapi-jwt-token';
 
 const exchangeCodeSchema: Schema = {
-    type: "object",
+    type: 'object',
     properties: {
         code: {
-            type: "string",
+            type: 'string',
         },
         scope: {
-            type: "array",
+            type: 'array',
             minItems: 1,
             items: {
-                type: "string"
+                type: 'string'
             }
         }
     },
-    required: ["scope", "code"]
+    required: ['scope', 'code']
 };
 const exchangeCodeSchema2: Schema = {
-    type: "object",
+    type: 'object',
     properties: {
         code: {
-            type: "string",
+            type: 'string',
         },
         scope: {
-            type: "string"
+            type: 'string'
         }
     },
-    required: ["scope", "code"]
+    required: ['scope', 'code']
 };
 
 export const createUrlRequestHandler = (gapiClient: Gapi): express.RequestHandler => {
@@ -57,7 +57,7 @@ export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestH
                         const data: GapiJwtToken = { gapi: tokenResponse.tokens };
                         return JwtHelper.sign(data);
                     } else {
-                        throw new ServerError("Could not exchange code", tokenResponse.res.status);
+                        throw new ServerError('Could not exchange code', tokenResponse.res.status);
                     }
                 })
                 .then((jwt: string) => {
@@ -68,7 +68,7 @@ export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestH
                     next(err);
                 });
         } else {
-            next(new ServerError("Invalid request", 400));
+            next(new ServerError('Invalid request', 400));
         }
     };
 };

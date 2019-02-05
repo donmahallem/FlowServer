@@ -35,10 +35,62 @@ describe('/routes/api/google/auth.route.ts', () => {
             expect(responseSpy.json.callCount).to.equal(1);
         });
         it('it should fail', () => {
-            stubInstanceGapi.generateAuthUrl.throws(new Error("test error"));
+            stubInstanceGapi.generateAuthUrl.throws(new Error('test error'));
             let testRequestHandler: express.RequestHandler = testObject.createUrlRequestHandler(<any>stubInstanceGapi);
-            expect(testRequestHandler.bind(testRequestHandler, nextSpy, <any>responseSpy, requestSpy)).to.throw(Error, "test error");
+            expect(testRequestHandler.bind(testRequestHandler, nextSpy, <any>responseSpy, requestSpy)).to.throw(Error, 'test error');
             expect(responseSpy.json.callCount).to.equal(0);
+        });
+    });
+    describe('createAuthRoute()', () => {
+
+        let routerStub: sinon.SinonStub;
+        let postSpy, getSpy: sinon.SinonSpy;
+        let createPostCodeRequestHandlerStub,
+            createUrlRequestHandlerStub: sinon.SinonStub;
+        before(() => {
+            routerStub = sinon.stub(express, 'Router');
+            createPostCodeRequestHandlerStub = sinon.stub(testObject, 'createPostCodeRequestHandler');
+            createUrlRequestHandlerStub = sinon.stub(testObject, 'createUrlRequestHandler');
+        });
+
+        beforeEach(() => {
+            postSpy = sinon.spy();
+            getSpy = sinon.spy();
+            routerStub.returns({
+                post: postSpy,
+                get: getSpy
+            });
+        });
+
+        afterEach(() => {
+            routerStub.reset();
+            createPostCodeRequestHandlerStub.reset();
+            createUrlRequestHandlerStub.reset();
+        });
+        after(() => {
+            routerStub.restore();
+            createPostCodeRequestHandlerStub.restore();
+            createUrlRequestHandlerStub.restore();
+        });
+        it('should create the router correctly', () => {
+            const testGapi: any = { test: 'object' };
+            const createPostCodeResponse: any = {
+                test: 1,
+                test2: '1299'
+            };
+            const createUrlResponse: any = {
+                test: 1,
+                test2: '1299',
+                test3: 29
+            };
+            expect(createUrlResponse).to.not.equal(createPostCodeResponse);
+            createPostCodeRequestHandlerStub.returns(createPostCodeResponse);
+            createUrlRequestHandlerStub.returns(createUrlResponse);
+            const resultingRoute: express.Router = testObject.createAuthRoute(testGapi);
+            expect(postSpy.callCount).to.equal(1);
+            expect(getSpy.callCount).to.equal(1);
+            expect(getSpy.getCall(0).args).to.deep.equal(['/url', createUrlResponse]);
+            expect(postSpy.getCall(0).args).to.deep.equal(['/code', createPostCodeResponse]);
         });
     });
 });
