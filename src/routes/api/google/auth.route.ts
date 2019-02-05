@@ -9,6 +9,7 @@ import { Credentials } from 'google-auth-library';
 import { Config } from '../../../config';
 import { JwtHelper } from '../../../jwt-helper';
 import { GapiJwtToken } from './gapi-jwt-token';
+import { RouteHelper } from '../../route-helper';
 
 export const exchangeCodeSchema: Schema = {
     type: 'object',
@@ -60,6 +61,32 @@ export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestH
             next(new ServerError('Invalid request', 400));
         }
     };
+};
+export const createPostCodeRequestHandler2 = (gapiClient: Gapi): express.RequestHandler => {
+    return RouteHelper
+        .promiseToResponse((req: express.Request) => {
+
+            const validator: Validator = new Validator();
+            const validatorResult: ValidatorResult = validator.validate(req.body, exchangeCodeSchema);
+            if (validatorResult.valid === true) {
+                return gapiClient.exchangeCode(req.body.code)
+                    .then((tokenResponse: GetTokenResponse) => {
+                        if (tokenResponse.res.status === 200) {
+                            const data: GapiJwtToken = { gapi: tokenResponse.tokens };
+                            return JwtHelper.sign(data);
+                        } else {
+                            return Promise.reject(new ServerError('Could not exchange code', tokenResponse.res.status));
+                        }
+                    })
+                    .then((jwt: string) => {
+                        return {
+                            body: jwt
+                        };
+                    });
+            } else {
+                return Promise.reject(new ServerError('Invalid request', 400));
+            }
+        })
 };
 
 export const createAuthRoute = (gapiClient: Gapi): express.Router => {

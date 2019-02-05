@@ -20,20 +20,7 @@ export class RouteHelper {
                     }
                     res.json(reg.body);
                 })
-                .catch((err: ServerError | any) => {
-                    if (err instanceof ServerError) {
-                        res.status(err.code).json({
-                            code: err.code,
-                            message: err.message
-                        });
-                    } else {
-                        res.status(500)
-                            .json({
-                                code: err.code,
-                                message: 'Internal server error'
-                            });
-                    }
-                })
+                .catch(next);
         }
     }
 }
