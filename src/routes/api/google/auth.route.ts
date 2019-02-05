@@ -49,6 +49,7 @@ export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestH
                     }
                 })
                 .then((jwt: string) => {
+                    console.log("JJJJJJ");
                     res.json({
                         token: jwt
                     });
