@@ -35,7 +35,7 @@
         "@types/chai": "^4.1.7",
         "@types/express": "^4.16.1",
         "@types/mocha": "^5.2.5",
-        "@types/node": "^10.12.21",
+        "@types/node": "^10.12.23",
         "@types/sinon": "^7.0.5",
         "chai": "^4.2.0",
         "mocha": "^5.2.0",
