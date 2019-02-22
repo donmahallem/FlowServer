@@ -1,0 +1,17 @@
+{
+    "diff": true,
+    "extension": [
+        "ts"
+    ],
+    "opts": "./test/mocha.opts",
+    "package": "./package.json",
+    "reporter": "spec",
+    "slow": 75,
+    "timeout": 10000,
+    "ui": "bdd",
+    "require": [
+        "ts-node/register"
+    ],
+    "check-leaks": true,
+    "recursive": true
+}
