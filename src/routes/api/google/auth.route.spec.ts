@@ -213,14 +213,14 @@ describe('/routes/api/google/auth.route.ts', () => {
                     expect(args).to.deep.equal([{
                         token: teststring
                     }]);
-                    console.log("JAJJ");
+                    //console.log("JAJJ");
                     expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, 'exchangeCode should be called just once');
-                    console.log("KFKFKF");
+                    //console.log("KFKFKF");
                     expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], 'exchangeCode should be called with the requestBody');
                     //expect(nextSpy.callCount).to.equal(1, 'nextSpy should be called once');
-                    console.log("JJFJJFJ");
+                    //console.log("JJFJJFJ");
                     //expect(jwtSignStub.callCount).to.equal(1, 'jwtSign should not be called at all');
-                    console.log("JAJJ");
+                    //console.log("JAJJ");
                     done();
                 });
                 reqHandler(reqObject, testResponse, null);
