@@ -79,7 +79,7 @@
         "google-auth-library": "^3.1.0",
         "googleapis": "^37.2.0",
         "jsonschema": "^1.2.4",
-        "jsonwebtoken": "^8.4.0",
+        "jsonwebtoken": "^8.5.0",
         "nconf": "^0.10.0"
     },
     "files": [
