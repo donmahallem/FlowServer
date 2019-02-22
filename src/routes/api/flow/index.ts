@@ -5,9 +5,9 @@ import { Response } from 'request';
 const flowApiClient: FlowApiClient = new FlowApiClient();
 
 export const rhGetActivityTimeLineForDay: express.RequestHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const month: number = parseInt(req.params.month);
-    const day: number = parseInt(req.params.day);
-    const year: number = parseInt(req.params.year);
+    const month: number = parseInt(req.params.month, 10);
+    const day: number = parseInt(req.params.day, 10);
+    const year: number = parseInt(req.params.year, 10);
     flowApiClient.getActivityTimelineForDay(year, month, day)
         .then((dataRes) => {
             res.json(dataRes);
