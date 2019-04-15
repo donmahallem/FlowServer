@@ -6,9 +6,9 @@
     "ignore": [
         "src/**/*.spec.ts"
     ],
-    "exec": "ts-node ./src/index.ts",
+    "exec": "ts-node ./src/binary.ts",
     "args": [
         "--config",
-        "config.json"
+        "testconfig.json"
     ]
 }
