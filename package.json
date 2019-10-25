@@ -14,6 +14,8 @@
         "build:live": "nodemon",
         "docs": "typedoc --options typedoc.json",
         "api-docs": "apidoc -i ./src/ -o ./docs/api/",
+        "lint": "tslint -c tslint.json -p tsconfig-lint.json src/**/*.ts",
+        "lint-fix": "tslint --fix -c tslint.json -p tsconfig-lint.json src/**/*.ts",
         "test:lint": "npm run lint",
         "test:build": "npm run build",
         "test:unit": "npm run test-ci",
