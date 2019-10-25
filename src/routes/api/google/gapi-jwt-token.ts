@@ -1,6 +1,9 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import { Credentials } from "google-auth-library";
 
-
-export interface GapiJwtToken {
-    gapi: Credentials
+export interface IGapiJwtToken {
+    gapi: Credentials;
 }

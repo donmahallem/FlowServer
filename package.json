@@ -1,18 +1,26 @@
 {
     "name": "@donmahallem/flowserver",
-    "version": "0.0.3",
+    "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "test": "mocha --config ./test/.mocharc.json src/**/*.spec.ts",
+        "test": "mocha",
+        "build": "tsc",
+        "build:doc": "node ./node_modules/typedoc/bin/typedoc --out ./tt2/ --mode modules --exclude /**/index ./src/",
+        "test-ci": "nyc npm run test",
         "test:live": "mocha --opts ./test/.mocha.opts --watch --watch-extensions ts src/**/*.spec.ts",
         "start": "npm run build:live",
         "build:live": "nodemon",
-        "build": "tsc",
-        "build:doc": "node ./node_modules/typedoc/bin/typedoc --out ./tt2/ --mode modules --exclude /**/index ./src/",
-        "test-ci_old": "nyc ts-mocha -p tsconfig.json -- --opts mocha.opts",
-        "test-ci": "nyc npm run test"
+        "docs": "typedoc --options typedoc.json",
+        "api-docs": "apidoc -i ./src/ -o ./docs/api/",
+        "lint": "tslint -c tslint.json -p tsconfig-lint.json src/**/*.ts",
+        "lint-fix": "tslint --fix -c tslint.json -p tsconfig-lint.json src/**/*.ts",
+        "test:lint": "npm run lint",
+        "test:build": "npm run build",
+        "test:unit": "npm run test-ci",
+        "test:docs": "npm run docs",
+        "test:api-docs": "npm run api-docs"
     },
     "author": "",
     "license": "ISC",
@@ -32,18 +40,21 @@
         "esModuleInterop": true
     },
     "devDependencies": {
-        "@types/chai": "~4.2.2",
+        "@types/chai": "~4.2.4",
         "@types/express": "~4.17.1",
         "@types/mocha": "~5.2.7",
-        "@types/node": "~12.7.8",
-        "@types/sinon": "~7.0.13",
+        "@types/node": "~12.11.7",
+        "@types/sinon": "~7.5.0",
+        "apidoc": "~0.17.7",
         "chai": "~4.2.0",
-        "mocha": "~6.2.0",
-        "nodemon": "~1.19.3",
+        "mocha": "~6.2.2",
+        "nodemon": "~1.19.4",
         "nyc": "~14.1.1",
         "sinon": "~7.5.0",
         "ts-node": "~8.4.1",
-        "typescript": "~3.6.3"
+        "tslint": "~5.20.0",
+        "typedoc": "~0.15.0",
+        "typescript": "~3.6.4"
     },
     "nyc": {
         "include": [
@@ -72,12 +83,13 @@
         "all": true
     },
     "dependencies": {
-        "@donmahallem/flowapi": "~3.3.0",
+        "@donmahallem/flow-api-types": "~2.3.0",
+        "@donmahallem/flowapi": "~4.1.1",
         "body-parser": "~1.19.0",
         "express": "~4.17.1",
-        "express-session": "~1.16.2",
-        "google-auth-library": "~5.3.0",
-        "googleapis": "~43.0.0",
+        "express-session": "~1.17.0",
+        "google-auth-library": "~5.5.1",
+        "googleapis": "~44.0.0",
         "jsonschema": "~1.2.4",
         "jsonwebtoken": "~8.5.1",
         "nconf": "~0.10.0"
