@@ -8,7 +8,7 @@ import { ServerError } from '../../../server-error';
 import { Credentials } from 'google-auth-library';
 import { Config } from '../../../config';
 import { JwtHelper } from '../../../jwt-helper';
-import { GapiJwtToken } from './gapi-jwt-token';
+import { IGapiJwtToken } from './gapi-jwt-token';
 import { RouteHelper } from '../../route-helper';
 
 export const exchangeCodeSchema: Schema = {
@@ -43,7 +43,7 @@ export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestH
             gapiClient.exchangeCode(req.body.code)
                 .then((tokenResponse: GetTokenResponse) => {
                     if (tokenResponse.res.status === 200) {
-                        const data: GapiJwtToken = { gapi: tokenResponse.tokens };
+                        const data: IGapiJwtToken = { gapi: tokenResponse.tokens };
                         return JwtHelper.sign(data);
                     } else {
                         return Promise.reject(new ServerError('Could not exchange code', tokenResponse.res.status));
@@ -72,7 +72,7 @@ export const createPostCodeRequestHandler2 = (gapiClient: Gapi): express.Request
                 return gapiClient.exchangeCode(req.body.code)
                     .then((tokenResponse: GetTokenResponse) => {
                         if (tokenResponse.res.status === 200) {
-                            const data: GapiJwtToken = { gapi: tokenResponse.tokens };
+                            const data: IGapiJwtToken = { gapi: tokenResponse.tokens };
                             return JwtHelper.sign(data);
                         } else {
                             return Promise.reject(new ServerError('Could not exchange code', tokenResponse.res.status));
