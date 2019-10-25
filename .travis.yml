@@ -40,24 +40,17 @@ after_success:
 - ./coveralls_upload.sh
 jobs:
   include:
-  - stage: Deployment
-    node_js: 'stable'
-    script: npm run docs
+  - stage: npm release
+    node_js: stable
+    script: npm run build
+    if: (tag IS present) AND (branch = master)
     deploy:
-    - provider: pages
-      skip-cleanup: true
-      local-dir: docs
-      github-token: $GITHUB_TOKEN
-      keep-history: true
-      on:
-        branch: master
-    - provider: npm
+      provider: npm
       skip_cleanup: true
       email: $npm_email
       api_key: $npm_api_key
       on:
         tags: true
-        all_branches: true
-        repo: donmahallem/TrapezeApiClientNode
+        repo: donmahallem/FlowServer
 notifications:
   webhooks: https://coveralls.io/webhook
