@@ -1,9 +1,9 @@
-import { fitness_v1 } from 'googleapis';
-import { URL } from 'url';
 import {
-    OAuth2Client
-} from 'google-auth-library';
-import { IConfig } from '../../../config';
+    OAuth2Client,
+} from "google-auth-library";
+import { fitness_v1 } from "googleapis";
+import { URL } from "url";
+import { IConfig } from "../../../config";
 export class SampleClient {
 
     private _options: any;
@@ -25,7 +25,7 @@ export class SampleClient {
         this.oAuth2Client = new OAuth2Client(
             config.google.client_id,
             config.google.client_secret,
-            config.google.redirect_url
+            config.google.redirect_url,
         );
     }
 

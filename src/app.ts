@@ -1,7 +1,7 @@
-import { IConfig } from './config';
-import * as express from 'express';
-import { createApiRoute, createAngularRoute, createErrorHandler } from './routes/api';
-import { join, resolve } from 'path';
+import * as express from "express";
+import { join, resolve } from "path";
+import { IConfig } from "./config";
+import { createAngularRoute, createApiRoute, createErrorHandler } from "./routes/api";
 
 export class HeartFitServerApp {
 
@@ -21,7 +21,7 @@ export class HeartFitServerApp {
         app.use(createErrorHandler());
         console.log("pp", resolve(join(this.config.general.static_files, "index.html")));
         app.listen(this.config.general.port, () => {
-            console.log('Example app listening on port ' + this.config.general.port + '!');
+            console.log("Example app listening on port " + this.config.general.port + "!");
         });
     }
 }

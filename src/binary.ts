@@ -1,5 +1,5 @@
-import { IConfig, getConfig } from "./config";
 import { HeartFitServerApp } from "./app";
+import { getConfig, IConfig } from "./config";
 
 const config: IConfig = getConfig();
 
