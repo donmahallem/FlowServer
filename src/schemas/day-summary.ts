@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as jsonschema from "jsonschema";
 
 export const timeValuePair: jsonschema.Schema = {
@@ -99,7 +103,7 @@ export const addressSchema: jsonschema.Schema = {
     id: "/SimpleAddress",
     type: "object",
     patternProperties: {
-        // The property name will be passed to new RegExp(prop), so backslashes
+        // the property name will be passed to new RegExp(prop), so backslashes
         // have to be escaped.
         "^[0-9]{4,4}\-[0-9]{1,2}\-[0-9]{1,2}$": {
             type: "object",

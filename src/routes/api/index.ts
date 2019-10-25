@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import { join, resolve } from "path";

@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import { HeartFitServerApp } from "./app";
 import { getConfig, IConfig } from "./config";
 

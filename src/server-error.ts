@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 export class ServerError extends Error {
 
     public get code() {

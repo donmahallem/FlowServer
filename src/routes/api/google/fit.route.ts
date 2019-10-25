@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as express from "express";
 import { GetTokenResponse } from "google-auth-library/build/src/auth/oauth2client";
 import { Schema, Validator, ValidatorResult } from "jsonschema";
@@ -12,7 +16,7 @@ export const createUrlRequestHandler = (gapiClient: Gapi): express.RequestHandle
 
 export const createRequireSigninMiddleware = () =>
     (req: express.Request, res: express.Response, next: express.NextFunction) => {
-        if (req.gapi.signedIn === true) {
+        if (req.gapi.signedIn) {
             next();
         } else {
             next(new Error("not authorized"));

@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as jwt from "jsonwebtoken";
 import { Config } from "./config";
 

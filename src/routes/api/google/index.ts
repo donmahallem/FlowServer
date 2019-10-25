@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as express from "express";
 import { Credentials } from "google-auth-library";
 import { GetTokenResponse } from "google-auth-library/build/src/auth/oauth2client";
@@ -57,8 +61,8 @@ export const createGoogleApiAuthRoute = (config: IConfig): express.RequestHandle
         req.gapi = {
             signedIn: false,
         };
-        if (req.headers["authorization"]) {
-            const authHeader: string = req.headers["authorization"];
+        if (req.headers.authorization) {
+            const authHeader: string = req.headers.authorization;
             if (regexBearerToken.test(authHeader)) {
                 JwtHelper.verify(authHeader.split(" ")[1])
                     .then((decoded: IGapiJwtToken) => {

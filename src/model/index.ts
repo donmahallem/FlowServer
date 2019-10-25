@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 export interface IDaySummary {
 
     [key: string]: IDayData;

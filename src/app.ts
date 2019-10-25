@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as express from "express";
 import { join, resolve } from "path";
 import { IConfig } from "./config";
@@ -19,8 +23,8 @@ export class HeartFitServerApp {
         app.use("/api", createApiRoute(this.config));
         app.use(createAngularRoute(this.config));
         app.use(createErrorHandler());
-        console.log("pp", resolve(join(this.config.general.static_files, "index.html")));
         app.listen(this.config.general.port, () => {
+            // tslint:disable-next-line:no-console
             console.log("Example app listening on port " + this.config.general.port + "!");
         });
     }

@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import { FlowApiClient } from "@donmahallem/flowapi";
 import * as express from "express";
 import { Response } from "request";

@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as express from "express";
 import { ServerError } from "../server-error";
 

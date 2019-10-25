@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import { createCipher, createDecipher, Cipher, Decipher } from "crypto";
 import { Credentials } from "google-auth-library";
 import { decode } from "jsonwebtoken";

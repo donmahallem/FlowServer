@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import { randomBytes } from "crypto";
 import * as nconf from "nconf";
 export const createSecret = (length: number = 128): string =>
@@ -29,18 +33,18 @@ export const getConfig = (): IConfig => {
         .argv({
             c: {
                 alias: "config",
-                describe: "Example description for usage generation",
                 demand: true,
+                describe: "Example description for usage generation",
             },
         }).required(["config"]);
     initialConf
         .file(initialConf.get("config"))
         .defaults({
-            "general:port": 3000,
-            "general:localhost_only": true,
-            "general:secret": createSecret(),
-            "general:jwt_secret": createSecret(256),
             "general:host": "localhost",
+            "general:jwt_secret": createSecret(256),
+            "general:localhost_only": true,
+            "general:port": 3000,
+            "general:secret": createSecret(),
         })
         .required(["google:client_id",
             "google:client_secret",
@@ -62,8 +66,8 @@ export const getConfig = (): IConfig => {
             static_files: initialConf.get("general:static_files"),
         },
         google: {
-            client_secret: initialConf.get("google:client_secret"),
             client_id: initialConf.get("google:client_id"),
+            client_secret: initialConf.get("google:client_secret"),
             redirect_url: initialConf.get("google:redirect_url"),
         },
     };
@@ -126,6 +130,18 @@ class GeneralConfig {
 }
 
 export class Config {
+
+    public get flow(): FlowConfig {
+        return this.flowConfig;
+    }
+
+    public get google(): GoogleConfig {
+        return this.googleConfig;
+    }
+
+    public get general(): GeneralConfig {
+        return this.generalConfig;
+    }
     public static readonly FLOW_EMAIL: string = "flow:email";
     public static readonly FLOW_PASSWORD: string = "flow:email";
     public static readonly GOOGLE_CLIENT_ID: string = "google:client_id";
@@ -136,11 +152,11 @@ export class Config {
     public static readonly GENERAL_SECRET: string = "general:secret";
     public static readonly GENERAL_JWT_SECRET: string = "general:jwt_secret";
     public static readonly GENERAL_STATIC_FILES: string = "general:static_files";
+    private static conifgInstance: Config = null;
     private initialConf: nconf.Provider;
     private googleConfig: GoogleConfig;
     private flowConfig: FlowConfig;
     private generalConfig: GeneralConfig;
-    private static conifgInstance: Config = null;
     private constructor() {
 
         const initialConf: nconf.Provider = new nconf.Provider();
@@ -173,22 +189,10 @@ export class Config {
         this.generalConfig = new GeneralConfig(this.initialConf);
     }
     public static get(): Config {
-        if (Config.conifgInstance == null) {
+        if (Config.conifgInstance === undefined) {
             Config.conifgInstance = new Config();
         }
         return Config.conifgInstance;
-    }
-
-    public get flow(): FlowConfig {
-        return this.flowConfig;
-    }
-
-    public get google(): GoogleConfig {
-        return this.googleConfig;
-    }
-
-    public get general(): GeneralConfig {
-        return this.generalConfig;
     }
 
 }

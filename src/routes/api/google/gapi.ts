@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import * as crypto from "crypto";
 import { GaxiosPromise } from "gaxios";
 import { Credentials } from "google-auth-library";

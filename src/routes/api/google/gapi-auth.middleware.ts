@@ -1,3 +1,7 @@
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
 import { createCipher, createDecipher, Cipher, Decipher } from "crypto";
 import { create } from "domain";
 import { NextFunction, Request, Response } from "express";
