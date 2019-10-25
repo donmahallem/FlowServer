@@ -1,12 +1,56 @@
 language: node_js
 node_js:
-- '8'
-- '9'
-- '10'
-cache:
-  directories:
-  - node_modules
-  - "$(npm config get prefix)/node_modules"
-before_install: npm install
-script: npm run build && npm run test-ci
-after_success: npm install coveralls && cat ./coverage/lcov.info | coveralls
+  - "8"
+  - "10"
+  - "stable"
+env:
+  global:
+  - COVERALLS_PARALLEL=true
+  matrix:
+  - TEST_SUITE=lint
+  - TEST_SUITE=build
+  - TEST_SUITE=unit
+  - TEST_SUITE=docs
+  - TEST_SUITE=api-docs
+matrix:
+  exclude:
+    - node_js: "8"
+      env: TEST_SUITE=lint
+    - node_js: "8"
+      env: TEST_SUITE=docs
+    - node_js: "8"
+      env: TEST_SUITE=api-docs
+    - node_js: "8"
+      env: TEST_SUITE=build
+    - node_js: "10"
+      env: TEST_SUITE=lint
+    - node_js: "10"
+      env: TEST_SUITE=docs
+    - node_js: "10"
+      env: TEST_SUITE=build
+    - node_js: "10"
+      env: TEST_SUITE=api-docs
+cache: npm
+before_script:
+- npm install -g npm-install-peers
+- npm-install-peers
+script:
+- npm run test:$TEST_SUITE
+after_success:
+- ./coveralls_upload.sh
+jobs:
+  include:
+  - stage: npm release
+    node_js: stable
+    script: npm run build
+    if: (tag IS present) AND (branch = master)
+    deploy:
+      provider: npm
+      skip_cleanup: true
+      email: $npm_email
+      api_key: $npm_api_key
+      on:
+        tags: true
+        repo: donmahallem/FlowServer
+notifications:
+  webhooks: https://coveralls.io/webhook

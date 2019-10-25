@@ -1,70 +1,75 @@
-import * as express from 'express';
-import { IConfig } from '../../../config';
-import { Gapi } from './gapi';
-import { GetTokenResponse } from 'google-auth-library/build/src/auth/oauth2client';
-import { Schema, Validator, ValidatorResult } from 'jsonschema';
-import { createAuthRoute } from './auth.route';
-import { createFitRoute } from './fit.route';
-import { JwtHelper } from '../../../jwt-helper';
-import { VerifyErrors } from 'jsonwebtoken';
-import { GapiJwtToken } from './gapi-jwt-token';
-import { Credentials } from 'google-auth-library';
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
+
+import * as express from "express";
+import { Credentials } from "google-auth-library";
+import { GetTokenResponse } from "google-auth-library/build/src/auth/oauth2client";
+import { Schema, Validator, ValidatorResult } from "jsonschema";
+import { VerifyErrors } from "jsonwebtoken";
+import { IConfig } from "../../../config";
+import { JwtHelper } from "../../../jwt-helper";
+import { createAuthRoute } from "./auth.route";
+import { createFitRoute } from "./fit.route";
+import { Gapi } from "./gapi";
+import { IGapiJwtToken } from "./gapi-jwt-token";
 declare global {
     namespace Express {
+        // tslint:disable-next-line:interface-name
         interface Request {
-            gapi: GapiInfo
+            gapi: IGapiInfo;
         }
     }
 }
 const exchangeCodeSchema: Schema = {
-    type: "object",
     properties: {
         code: {
             type: "string",
         },
         scope: {
-            type: "array",
-            minItems: 1,
             items: {
-                type: "string"
-            }
-        }
+                type: "string",
+            },
+            minItems: 1,
+            type: "array",
+        },
     },
-    required: ["scope", "code"]
+    required: ["scope", "code"],
+    type: "object",
 };
 const exchangeCodeSchema2: Schema = {
-    type: "object",
     properties: {
         code: {
             type: "string",
         },
         scope: {
-            type: "string"
-        }
+            type: "string",
+        },
     },
-    required: ["scope", "code"]
+    required: ["scope", "code"],
+    type: "object",
 };
 
-export interface GapiInfo {
+export interface IGapiInfo {
     signedIn: boolean;
     credentials?: Credentials;
 }
 
-export const regexBearerToken: RegExp = new RegExp('^bearer\\ .*$', 'i');
+export const regexBearerToken: RegExp = new RegExp("^bearer\\ .*$", "i");
 
-export const createGoogleApiAuthRoute = (config: IConfig): express.RequestHandler => {
-    return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+export const createGoogleApiAuthRoute = (config: IConfig): express.RequestHandler =>
+    (req: express.Request, res: express.Response, next: express.NextFunction) => {
         req.gapi = {
-            signedIn: false
-        }
-        if (req.headers['authorization']) {
-            const authHeader: string = req.headers['authorization'];
+            signedIn: false,
+        };
+        if (req.headers.authorization) {
+            const authHeader: string = req.headers.authorization;
             if (regexBearerToken.test(authHeader)) {
-                JwtHelper.verify(authHeader.split(' ')[1])
-                    .then((decoded: GapiJwtToken) => {
+                JwtHelper.verify(authHeader.split(" ")[1])
+                    .then((decoded: IGapiJwtToken) => {
                         req.gapi = {
+                            credentials: decoded.gapi,
                             signedIn: true,
-                            credentials: decoded.gapi
                         };
                         next();
                     }).catch((err: VerifyErrors) => {
@@ -75,14 +80,12 @@ export const createGoogleApiAuthRoute = (config: IConfig): express.RequestHandle
         }
         next();
     };
-}
-
 
 export const createGoogleApiRoute = (config: IConfig): express.Router => {
     const apiRoute: express.Router = express.Router();
     const aa = new Gapi(config);
     apiRoute.use(createGoogleApiAuthRoute(config));
-    apiRoute.use('/auth', createAuthRoute(aa));
-    apiRoute.use('/fit', createFitRoute(aa));
+    apiRoute.use("/auth", createAuthRoute(aa));
+    apiRoute.use("/fit", createFitRoute(aa));
     return apiRoute;
-}
+};

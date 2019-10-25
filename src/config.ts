@@ -1,9 +1,12 @@
-import { randomBytes } from 'crypto';
-import * as nconf from 'nconf';
-export const createSecret = (length: number = 128): string => {
-    return randomBytes(length).toString("hex");
-}
+/*!
+ * Source https://github.com/donmahallem/FlowServer
+ */
 
+import { randomBytes } from "crypto";
+import * as nconf from "nconf";
+export const createSecret = (length: number = 128): string =>
+    randomBytes(length).toString("hex");
+// tslint:disable:max-classes-per-file
 export interface IConfig {
     general: {
         port: number;
@@ -12,36 +15,36 @@ export interface IConfig {
         host: string;
         localhost_only: boolean;
         static_files: string;
-    },
+    };
     google: {
         client_id: string;
         client_secret: string;
         redirect_url: string;
-    },
+    };
     flow: {
         email: string;
         password: string;
-    }
+    };
 }
 
 export const getConfig = (): IConfig => {
     const initialConf: nconf.Provider = new nconf.Provider();
     initialConf
         .argv({
-            "c": {
-                alias: 'config',
-                describe: 'Example description for usage generation',
-                demand: true
-            }
+            c: {
+                alias: "config",
+                demand: true,
+                describe: "Example description for usage generation",
+            },
         }).required(["config"]);
     initialConf
         .file(initialConf.get("config"))
         .defaults({
-            "general:port": 3000,
-            "general:localhost_only": true,
-            "general:secret": createSecret(),
+            "general:host": "localhost",
             "general:jwt_secret": createSecret(256),
-            "general:host": "localhost"
+            "general:localhost_only": true,
+            "general:port": 3000,
+            "general:secret": createSecret(),
         })
         .required(["google:client_id",
             "google:client_secret",
@@ -52,23 +55,23 @@ export const getConfig = (): IConfig => {
     return {
         flow: {
             email: initialConf.get("flow:email"),
-            password: initialConf.get("flow:password")
+            password: initialConf.get("flow:password"),
         },
         general: {
-            port: initialConf.get("general:port"),
             host: initialConf.get("general:host"),
-            localhost_only: initialConf.get("general:localhost_only"),
-            secret: initialConf.get("general:secret"),
             jwt_secret: initialConf.get("general:jwt_secret"),
-            static_files: initialConf.get("general:static_files")
+            localhost_only: initialConf.get("general:localhost_only"),
+            port: initialConf.get("general:port"),
+            secret: initialConf.get("general:secret"),
+            static_files: initialConf.get("general:static_files"),
         },
         google: {
-            client_secret: initialConf.get("google:client_secret"),
             client_id: initialConf.get("google:client_id"),
-            redirect_url: initialConf.get("google:redirect_url")
-        }
-    }
-}
+            client_secret: initialConf.get("google:client_secret"),
+            redirect_url: initialConf.get("google:redirect_url"),
+        },
+    };
+};
 
 class GoogleConfig {
 
@@ -127,40 +130,52 @@ class GeneralConfig {
 }
 
 export class Config {
-    public static readonly FLOW_EMAIL: string = 'flow:email';
-    public static readonly FLOW_PASSWORD: string = 'flow:email';
-    public static readonly GOOGLE_CLIENT_ID: string = 'google:client_id';
-    public static readonly GOOGLE_CLIENT_SECRET: string = 'google:client_secret';
-    public static readonly GOOGLE_REDIRECT_URL: string = 'google:redirect_url';
-    public static readonly GENERAL_PORT: string = 'general:port';
-    public static readonly GENERAL_HOST: string = 'general:host';
-    public static readonly GENERAL_SECRET: string = 'general:secret';
-    public static readonly GENERAL_JWT_SECRET: string = 'general:jwt_secret';
-    public static readonly GENERAL_STATIC_FILES: string = 'general:static_files';
+
+    public get flow(): FlowConfig {
+        return this.flowConfig;
+    }
+
+    public get google(): GoogleConfig {
+        return this.googleConfig;
+    }
+
+    public get general(): GeneralConfig {
+        return this.generalConfig;
+    }
+    public static readonly FLOW_EMAIL: string = "flow:email";
+    public static readonly FLOW_PASSWORD: string = "flow:email";
+    public static readonly GOOGLE_CLIENT_ID: string = "google:client_id";
+    public static readonly GOOGLE_CLIENT_SECRET: string = "google:client_secret";
+    public static readonly GOOGLE_REDIRECT_URL: string = "google:redirect_url";
+    public static readonly GENERAL_PORT: string = "general:port";
+    public static readonly GENERAL_HOST: string = "general:host";
+    public static readonly GENERAL_SECRET: string = "general:secret";
+    public static readonly GENERAL_JWT_SECRET: string = "general:jwt_secret";
+    public static readonly GENERAL_STATIC_FILES: string = "general:static_files";
+    private static conifgInstance: Config = undefined;
     private initialConf: nconf.Provider;
     private googleConfig: GoogleConfig;
     private flowConfig: FlowConfig;
     private generalConfig: GeneralConfig;
-    private static conifgInstance: Config = null;
     private constructor() {
 
         const initialConf: nconf.Provider = new nconf.Provider();
         initialConf
             .argv({
-                "c": {
-                    alias: 'config',
-                    describe: 'Example description for usage generation',
-                    demand: true
-                }
+                c: {
+                    alias: "config",
+                    demand: true,
+                    describe: "Example description for usage generation",
+                },
             }).required(["config"]);
         initialConf
             .file(initialConf.get("config"))
             .defaults({
-                "general:port": 3000,
-                "general:localhost_only": true,
-                "general:secret": createSecret(256),
+                "general:host": "localhost",
                 "general:jwt_secret": createSecret(256),
-                "general:host": "localhost"
+                "general:localhost_only": true,
+                "general:port": 3000,
+                "general:secret": createSecret(256),
             })
             .required([
                 Config.GOOGLE_CLIENT_SECRET,
@@ -174,22 +189,10 @@ export class Config {
         this.generalConfig = new GeneralConfig(this.initialConf);
     }
     public static get(): Config {
-        if (Config.conifgInstance == null) {
+        if (Config.conifgInstance === undefined) {
             Config.conifgInstance = new Config();
         }
         return Config.conifgInstance;
-    }
-
-    public get flow(): FlowConfig {
-        return this.flowConfig;
-    }
-
-    public get google(): GoogleConfig {
-        return this.googleConfig;
-    }
-
-    public get general(): GeneralConfig {
-        return this.generalConfig;
     }
 
 }
