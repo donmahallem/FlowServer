@@ -24,7 +24,6 @@ export const rhGetActivityTimeLineForDay: express.RequestHandler
 
 export const createFlowApiRoute = (config: IConfig): express.Router => {
     const apiRoute: express.Router = express.Router();
-    flowApiClient.signin(config.flow.email, config.flow.password).catch(console.error);
     apiRoute.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
         next();
     });

@@ -15,6 +15,7 @@ import { Gapi } from "./gapi";
 import { IGapiJwtToken } from "./gapi-jwt-token";
 declare global {
     namespace Express {
+        // tslint:disable-next-line:interface-name
         interface Request {
             gapi: IGapiInfo;
         }

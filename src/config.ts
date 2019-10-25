@@ -6,7 +6,7 @@ import { randomBytes } from "crypto";
 import * as nconf from "nconf";
 export const createSecret = (length: number = 128): string =>
     randomBytes(length).toString("hex");
-
+// tslint:disable:max-classes-per-file
 export interface IConfig {
     general: {
         port: number;
@@ -152,7 +152,7 @@ export class Config {
     public static readonly GENERAL_SECRET: string = "general:secret";
     public static readonly GENERAL_JWT_SECRET: string = "general:jwt_secret";
     public static readonly GENERAL_STATIC_FILES: string = "general:static_files";
-    private static conifgInstance: Config = null;
+    private static conifgInstance: Config = undefined;
     private initialConf: nconf.Provider;
     private googleConfig: GoogleConfig;
     private flowConfig: FlowConfig;
@@ -172,10 +172,10 @@ export class Config {
             .file(initialConf.get("config"))
             .defaults({
                 "general:host": "localhost",
+                "general:jwt_secret": createSecret(256),
                 "general:localhost_only": true,
                 "general:port": 3000,
                 "general:secret": createSecret(256),
-                "general:jwt_secret": createSecret(256),
             })
             .required([
                 Config.GOOGLE_CLIENT_SECRET,

@@ -78,9 +78,9 @@ export const createPostCodeRequestHandler2 = (gapiClient: Gapi): express.Request
                             return Promise.reject(new ServerError("Could not exchange code", tokenResponse.res.status));
                         }
                     })
-                    .then((jwt: string) =>
+                    .then((jwttoken: string) =>
                         ({
-                            body: jwt,
+                            body: jwttoken,
                         }));
             } else {
                 return Promise.reject(new ServerError("Invalid request", 400));

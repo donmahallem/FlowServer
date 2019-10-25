@@ -150,6 +150,7 @@ describe("/routes/api/google/auth.route.ts", () => {
             it("should not work with failing validator", () => {
                 const reqHandler: express.RequestHandler
                     = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
+                // tslint:disable-next-line:no-unused-expression
                 expect(reqHandler(reqObject, undefined, nextSpy)).to.be.undefined;
                 expect(nextSpy.callCount).to.equal(1);
             });
