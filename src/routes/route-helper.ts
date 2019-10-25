@@ -11,7 +11,8 @@ export interface IRouteHelperResponse<T> {
 }
 export class RouteHelper {
 
-    public static promiseToResponse<T>(prom: (req: express.Request) => Promise<IRouteHelperResponse<T>>): express.RequestHandler {
+    public static promiseToResponse<T>(prom: (req: express.Request) =>
+        Promise<IRouteHelperResponse<T>>): express.RequestHandler {
         return (req: express.Request, res: express.Response, next: express.NextFunction) => {
             prom(req)
                 .then((reg: IRouteHelperResponse<T>) => {

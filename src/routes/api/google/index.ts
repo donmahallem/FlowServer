@@ -16,28 +16,27 @@ import { IGapiJwtToken } from "./gapi-jwt-token";
 declare global {
     namespace Express {
         interface Request {
-            gapi: GapiInfo;
+            gapi: IGapiInfo;
         }
     }
 }
 const exchangeCodeSchema: Schema = {
-    type: "object",
     properties: {
         code: {
             type: "string",
         },
         scope: {
-            type: "array",
-            minItems: 1,
             items: {
                 type: "string",
             },
+            minItems: 1,
+            type: "array",
         },
     },
     required: ["scope", "code"],
+    type: "object",
 };
 const exchangeCodeSchema2: Schema = {
-    type: "object",
     properties: {
         code: {
             type: "string",
@@ -47,9 +46,10 @@ const exchangeCodeSchema2: Schema = {
         },
     },
     required: ["scope", "code"],
+    type: "object",
 };
 
-export interface GapiInfo {
+export interface IGapiInfo {
     signedIn: boolean;
     credentials?: Credentials;
 }
@@ -67,8 +67,8 @@ export const createGoogleApiAuthRoute = (config: IConfig): express.RequestHandle
                 JwtHelper.verify(authHeader.split(" ")[1])
                     .then((decoded: IGapiJwtToken) => {
                         req.gapi = {
-                            signedIn: true,
                             credentials: decoded.gapi,
+                            signedIn: true,
                         };
                         next();
                     }).catch((err: VerifyErrors) => {

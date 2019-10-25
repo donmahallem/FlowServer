@@ -10,7 +10,7 @@ import { URL } from "url";
 import { IConfig } from "../../../config";
 export class SampleClient {
 
-    private _options: any;
+    private mOptions: any;
     private oAuth2Client: OAuth2Client;
     private authorizeUrl: string;
     constructor(config: IConfig) {

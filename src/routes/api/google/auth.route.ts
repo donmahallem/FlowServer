@@ -16,20 +16,20 @@ import { Gapi } from "./gapi";
 import { IGapiJwtToken } from "./gapi-jwt-token";
 
 export const exchangeCodeSchema: Schema = {
-    type: "object",
     properties: {
         code: {
             type: "string",
         },
         scope: {
-            type: "array",
-            minItems: 1,
             items: {
                 type: "string",
             },
+            minItems: 1,
+            type: "array",
         },
     },
     required: ["scope", "code"],
+    type: "object",
 };
 
 export const createUrlRequestHandler = (gapiClient: Gapi): express.RequestHandler =>
@@ -51,10 +51,9 @@ export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestH
                         return Promise.reject(new ServerError("Could not exchange code", tokenResponse.res.status));
                     }
                 })
-                .then((jwt: string) => {
-                    console.log("JJJJJJ");
+                .then((jwtToken: string) => {
                     res.json({
-                        token: jwt,
+                        token: jwtToken,
                     });
                 }).catch((err: Error) => {
                     next(err);

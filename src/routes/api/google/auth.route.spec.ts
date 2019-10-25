@@ -4,6 +4,7 @@
 
 import { expect } from "chai";
 import * as express from "express";
+import { Dictionary } from "express-serve-static-core";
 import * as jsonschema from "jsonschema";
 // if you used the '@types/mocha' method to install mocha type definitions, uncomment the following line
 import "mocha";
@@ -16,7 +17,8 @@ import { Gapi } from "./gapi";
 describe("/routes/api/google/auth.route.ts", () => {
     describe("createUrlRequestHandler(Gapi)", () => {
         let stubInstanceGapi: sinon.SinonStubbedInstance<Gapi>;
-        let nextSpy, requestSpy: sinon.SinonSpy;
+        let nextSpy: sinon.SinonSpy;
+        let requestSpy: sinon.SinonSpy;
         let responseSpy: { json: sinon.SinonSpy };
 
         beforeEach(() => {
@@ -33,8 +35,9 @@ describe("/routes/api/google/auth.route.ts", () => {
         });
         it("it should succeed", () => {
             stubInstanceGapi.generateAuthUrl.returns("test");
-            const testRequestHandler: express.RequestHandler = testObject.createUrlRequestHandler(stubInstanceGapi as any);
-            testRequestHandler(nextSpy, responseSpy as any, requestSpy);
+            const testRequestHandler: express.RequestHandler
+                = testObject.createUrlRequestHandler(stubInstanceGapi as any);
+            testRequestHandler(nextSpy as any, responseSpy as any, requestSpy);
             expect(responseSpy.json.getCall(0).args).to.deep.equal([{
                 url: "test",
             }]);
@@ -42,7 +45,8 @@ describe("/routes/api/google/auth.route.ts", () => {
         });
         it("it should fail", () => {
             stubInstanceGapi.generateAuthUrl.throws(new Error("test error"));
-            const testRequestHandler: express.RequestHandler = testObject.createUrlRequestHandler(stubInstanceGapi as any);
+            const testRequestHandler: express.RequestHandler =
+                testObject.createUrlRequestHandler(stubInstanceGapi as any);
             expect(testRequestHandler.bind(testRequestHandler, nextSpy, responseSpy as any, requestSpy)).to.throw(Error, "test error");
             expect(responseSpy.json.callCount).to.equal(0);
         });
@@ -50,9 +54,10 @@ describe("/routes/api/google/auth.route.ts", () => {
     describe("createAuthRoute(Gapi)", () => {
 
         let routerStub: sinon.SinonStub;
-        let postSpy, getSpy: sinon.SinonSpy;
-        let createPostCodeRequestHandlerStub,
-            createUrlRequestHandlerStub: sinon.SinonStub;
+        let postSpy: sinon.SinonSpy;
+        let getSpy: sinon.SinonSpy;
+        let createPostCodeRequestHandlerStub: sinon.SinonStub;
+        let createUrlRequestHandlerStub: sinon.SinonStub;
         let fakeRouter: any;
         before(() => {
             routerStub = sinon.stub(express, "Router");
@@ -64,8 +69,8 @@ describe("/routes/api/google/auth.route.ts", () => {
             postSpy = sinon.spy();
             getSpy = sinon.spy();
             fakeRouter = {
-                post: postSpy,
                 get: getSpy,
+                post: postSpy,
             };
             routerStub.returns(fakeRouter);
         });
@@ -129,7 +134,8 @@ describe("/routes/api/google/auth.route.ts", () => {
 
         afterEach(() => {
             expect(validatorStubInstance.validate.callCount).to.equal(1);
-            expect(validatorStubInstance.validate.getCall(0).args).to.deep.equal([reqObject.body, testObject.exchangeCodeSchema]);
+            expect(validatorStubInstance.validate.getCall(0).args)
+                .to.deep.equal([reqObject.body, testObject.exchangeCodeSchema]);
             testSandbox.reset();
             validatorStub.restore();
         });
@@ -142,7 +148,8 @@ describe("/routes/api/google/auth.route.ts", () => {
                 validatorStubInstance.validate.returns({ valid: false } as any);
             });
             it("should not work with failing validator", () => {
-                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
+                const reqHandler: express.RequestHandler
+                    = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
                 expect(reqHandler(reqObject, undefined, nextSpy)).to.be.undefined;
                 expect(nextSpy.callCount).to.equal(1);
             });
@@ -157,7 +164,8 @@ describe("/routes/api/google/auth.route.ts", () => {
                 validatorStubInstance.validate.returns({ valid: true } as any);
             });
             it("should fail on exchangeCode rejection", (done) => {
-                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
+                const reqHandler: express.RequestHandler
+                    = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
                 jwtSignStub.rejects(testError);
                 gapiStubInstance.exchangeCode.rejects(testError);
                 nextSpy.callsFake(() => {
@@ -170,7 +178,8 @@ describe("/routes/api/google/auth.route.ts", () => {
                 expect(reqHandler.bind(reqHandler, reqObject, undefined, nextSpy)).to.not.throw();
             });
             it("should fail on exchangeCode returning non 200 response code", (done) => {
-                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
+                const reqHandler: express.RequestHandler = testObject
+                    .createPostCodeRequestHandler(gapiStubInstance as any);
                 jwtSignStub.rejects(testError);
                 gapiStubInstance.exchangeCode.resolves({ res: { status: 4923 } } as any);
                 nextSpy.callsFake((...args: any) => {
@@ -187,15 +196,18 @@ describe("/routes/api/google/auth.route.ts", () => {
                 expect(reqHandler.bind(reqHandler, reqObject, undefined, nextSpy)).to.not.throw();
             });
             it("should fail on jwtSignFail", (done) => {
-                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
+                const reqHandler: express.RequestHandler
+                    = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
                 jwtSignStub.rejects(testError);
                 gapiStubInstance.exchangeCode.resolves({ res: { status: 200 } } as any);
                 nextSpy.callsFake((...args: any) => {
                     expect(args.length).to.equal(1);
                     expect(args[0]).to.be.instanceOf(Error);
                     expect(args[0].message).equal("test error");
-                    expect(gapiStubInstance.exchangeCode.callCount).to.equal(1, "exchangeCode should be called just once");
-                    expect(gapiStubInstance.exchangeCode.getCall(0).args).to.deep.equal([reqObject.body.code], "exchangeCode should be called with the requestBody");
+                    expect(gapiStubInstance.exchangeCode.callCount)
+                        .to.equal(1, "exchangeCode should be called just once");
+                    expect(gapiStubInstance.exchangeCode.getCall(0).args)
+                        .to.deep.equal([reqObject.body.code], "exchangeCode should be called with the requestBody");
                     expect(nextSpy.callCount).to.equal(1, "nextSpy should be called once");
                     expect(jwtSignStub.callCount).to.equal(1, "jwtSign should not be called at all");
                     done();
@@ -203,7 +215,8 @@ describe("/routes/api/google/auth.route.ts", () => {
                 expect(reqHandler.bind(reqHandler, reqObject, undefined, nextSpy)).to.not.throw();
             });
             it("should succeed", (done) => {
-                const reqHandler: express.RequestHandler = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
+                const reqHandler: express.RequestHandler
+                    = testObject.createPostCodeRequestHandler(gapiStubInstance as any);
                 const teststring: string = "jasdfadsjafjaskdfkasnjf aosdfjn aws0irfj 0wru ";
                 jwtSignStub.resolves(teststring);
                 const testResponse: any = {

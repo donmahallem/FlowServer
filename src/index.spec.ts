@@ -7,6 +7,5 @@ import "mocha";
 import * as index from "./index";
 
 describe("index", () => {
-    it("should contain FlowApiValidator", () => {
-    });
+    it("should contain FlowApiValidator");
 });

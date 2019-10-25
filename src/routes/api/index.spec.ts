@@ -14,16 +14,16 @@ describe("/routes/api/index.ts", () => {
         it("createErrorHandler()", () => {
             const handler: express.ErrorRequestHandler = testObject.createErrorHandler();
             const resSpies: {
-                status: sinon.SinonStub,
                 json: sinon.SinonSpy,
+                status: sinon.SinonStub,
             } = {
-                status: sinon.stub(),
                 json: sinon.spy(),
+                status: sinon.stub(),
             };
             resSpies.status.callsFake(() =>
                 resSpies);
             const nextSpy: sinon.SinonSpy = sinon.spy();
-            handler(null, null, resSpies as any, nextSpy);
+            handler(undefined, undefined, resSpies as any, nextSpy);
             expect(resSpies.status.callCount).to.equal(1);
             expect(resSpies.status.getCall(0).args).to.deep.equal([500]);
             expect(resSpies.json.callCount).to.equal(1);

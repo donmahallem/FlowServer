@@ -22,7 +22,7 @@ export class GapiAuthInstance {
 
     public load(req: Request): void {
         if (req.cookies[this.COOKIE_NAME]) {
-
+            this.mIsAuthenticated = false;
         } else {
             this.mIsAuthenticated = false;
         }

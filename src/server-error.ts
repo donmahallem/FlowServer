@@ -5,12 +5,12 @@
 export class ServerError extends Error {
 
     public get code() {
-        return this._code;
+        return this.mCode;
     }
 
-    private _code: number;
+    private mCode: number;
     constructor(msg: string, code: number = 500) {
         super(msg);
-        this._code = code;
+        this.mCode = code;
     }
 }

@@ -30,12 +30,12 @@ export class Gapi {
     public generateAuthUrl(): string {
         const options: GenerateAuthUrlOpts = {
             access_type: "offline",
+            include_granted_scopes: true,
+            redirect_uri: this.mConfig.google.redirect_url,
             scope: [
                 "https://www.googleapis.com/auth/fitness.body.read",
                 "https://www.googleapis.com/auth/fitness.body.write",
             ],
-            include_granted_scopes: true,
-            redirect_uri: this.mConfig.google.redirect_url,
             // code_challenge: this.createCodeChallenge(this.createCodeVerifier()),
             // code_challenge_method: CodeChallengeMethod.S256
         };
@@ -72,21 +72,19 @@ export class Gapi {
             auth: creds.access_token,
         });
         return fitClient.users.dataSources.create({
-            userId: "me",
             requestBody: {
-                dataStreamName: "PolarImport",
-                type: "raw",
                 application: {
                     // "packageName": "com.github.donmahallem.heartfit",
                     detailsUrl: "https://donmahallem.github.io/ngHeartFit",
                     name: "HeartFit",
                     version: "1",
                 },
+                dataStreamName: "PolarImport",
                 dataType: {
                     field: [
                         {
-                            name: "bpm",
                             format: "floatPoint",
+                            name: "bpm",
                         },
                     ],
                     name: "com.google.heart_rate.bpm",
@@ -98,7 +96,9 @@ export class Gapi {
                     uid: "1000001",
                     version: "1.0",
                 },
+                type: "raw",
             },
+            userId: "me",
         });
     }
 }

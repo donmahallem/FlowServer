@@ -58,11 +58,11 @@ export const getConfig = (): IConfig => {
             password: initialConf.get("flow:password"),
         },
         general: {
-            port: initialConf.get("general:port"),
             host: initialConf.get("general:host"),
-            localhost_only: initialConf.get("general:localhost_only"),
-            secret: initialConf.get("general:secret"),
             jwt_secret: initialConf.get("general:jwt_secret"),
+            localhost_only: initialConf.get("general:localhost_only"),
+            port: initialConf.get("general:port"),
+            secret: initialConf.get("general:secret"),
             static_files: initialConf.get("general:static_files"),
         },
         google: {
@@ -164,18 +164,18 @@ export class Config {
             .argv({
                 c: {
                     alias: "config",
-                    describe: "Example description for usage generation",
                     demand: true,
+                    describe: "Example description for usage generation",
                 },
             }).required(["config"]);
         initialConf
             .file(initialConf.get("config"))
             .defaults({
-                "general:port": 3000,
+                "general:host": "localhost",
                 "general:localhost_only": true,
+                "general:port": 3000,
                 "general:secret": createSecret(256),
                 "general:jwt_secret": createSecret(256),
-                "general:host": "localhost",
             })
             .required([
                 Config.GOOGLE_CLIENT_SECRET,

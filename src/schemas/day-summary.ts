@@ -5,7 +5,6 @@
 import * as jsonschema from "jsonschema";
 
 export const timeValuePair: jsonschema.Schema = {
-    type: "object",
     properties: {
         time: {
             type: "integer",
@@ -13,20 +12,21 @@ export const timeValuePair: jsonschema.Schema = {
             type: "number",
         },
     },
+    type: "object",
 };
 export const startEndTimePair: jsonschema.Schema = {
-    type: "object",
     properties: {
-        startTime: {
-            type: "integer",
-        }, endTime: {
+        endTime: {
             type: "number",
         },
+        startTime: {
+            type: "integer",
+        },
     },
+    type: "object",
 };
 
 export const activityTimelineIconsSchema: jsonschema.Schema = {
-    type: "object",
     properties: {
         activityTimelineIconType: {
             type: "string",
@@ -53,11 +53,11 @@ export const activityTimelineIconsSchema: jsonschema.Schema = {
             type: "string",
         },
     },
+    type: "object",
 };
 
 export const activityGraphData: jsonschema.Schema = {
     id: "/ActivityGraphData",
-    type: "object",
     properties: {
         activityTimelineIcons: {
             items: activityTimelineIconsSchema,
@@ -93,27 +93,27 @@ export const activityGraphData: jsonschema.Schema = {
         highSessionTimelineList: { type: "array" },
         lastSync: { type: "number" },
         trainingTimelineList: {
-            type: "array",
             items: startEndTimePair,
+            type: "array",
         },
     },
+    type: "object",
 };
 
 export const addressSchema: jsonschema.Schema = {
+    additionalProperties: false,
     id: "/SimpleAddress",
-    type: "object",
     patternProperties: {
         // the property name will be passed to new RegExp(prop), so backslashes
         // have to be escaped.
         "^[0-9]{4,4}\-[0-9]{1,2}\-[0-9]{1,2}$": {
-            type: "object",
             properties: {
+                activityGraphData,
                 dataPanelData: {
                     type: "object",
                 },
-                activityGraphData,
             },
+            type: "object",
         },
-    },
-    additionalProperties: false,
+    }, type: "object",
 };
