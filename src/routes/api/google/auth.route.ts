@@ -14,6 +14,7 @@ import { ServerError } from "../../../server-error";
 import { RouteHelper } from "../../route-helper";
 import { Gapi } from "./gapi";
 import { IGapiJwtToken } from "./gapi-jwt-token";
+import { createValidateBodyMiddleware } from "../../../validate-body-middleware";
 
 export const exchangeCodeSchema: Schema = {
     properties: {
@@ -39,28 +40,22 @@ export const createUrlRequestHandler = (gapiClient: Gapi): express.RequestHandle
 
 export const createPostCodeRequestHandler = (gapiClient: Gapi): express.RequestHandler =>
     (req, res, next) => {
-        const validator: Validator = new Validator();
-        const validatorResult: ValidatorResult = validator.validate(req.body, exchangeCodeSchema);
-        if (validatorResult.valid) {
-            gapiClient.exchangeCode(req.body.code)
-                .then((tokenResponse: GetTokenResponse) => {
-                    if (tokenResponse.res.status === 200) {
-                        const data: IGapiJwtToken = { gapi: tokenResponse.tokens };
-                        return JwtHelper.sign(data);
-                    } else {
-                        return Promise.reject(new ServerError("Could not exchange code", tokenResponse.res.status));
-                    }
-                })
-                .then((jwtToken: string) => {
-                    res.json({
-                        token: jwtToken,
-                    });
-                }).catch((err: Error) => {
-                    next(err);
+        gapiClient.exchangeCode(req.body.code)
+            .then((tokenResponse: GetTokenResponse) => {
+                if (tokenResponse.res.status === 200) {
+                    const data: IGapiJwtToken = { gapi: tokenResponse.tokens };
+                    return JwtHelper.sign(data);
+                } else {
+                    return Promise.reject(new ServerError("Could not exchange code", tokenResponse.res.status));
+                }
+            })
+            .then((jwtToken: string) => {
+                res.json({
+                    token: jwtToken,
                 });
-        } else {
-            next(new ServerError("Invalid request", 400));
-        }
+            }).catch((err: Error) => {
+                next(err);
+            });
     };
 export const createPostCodeRequestHandler2 = (gapiClient: Gapi): express.RequestHandler =>
     RouteHelper
@@ -90,6 +85,6 @@ export const createPostCodeRequestHandler2 = (gapiClient: Gapi): express.Request
 export const createAuthRoute = (gapiClient: Gapi): express.Router => {
     const apiRoute: express.Router = express.Router();
     apiRoute.get("/url", createUrlRequestHandler(gapiClient));
-    apiRoute.post("/code", createPostCodeRequestHandler(gapiClient));
+    apiRoute.post("/code", createValidateBodyMiddleware(exchangeCodeSchema), createPostCodeRequestHandler(gapiClient));
     return apiRoute;
 };
