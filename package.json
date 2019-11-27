@@ -90,7 +90,7 @@
         "express-session": "~1.17.0",
         "google-auth-library": "~5.5.1",
         "googleapis": "~45.0.0",
-        "jsonschema": "~1.2.4",
+        "jsonschema": "~1.2.5",
         "jsonwebtoken": "~8.5.1",
         "nconf": "~0.10.0"
     },
