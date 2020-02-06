@@ -83,7 +83,7 @@
         "all": true
     },
     "dependencies": {
-        "@donmahallem/flow-api-types": "~2.5.1",
+        "@donmahallem/flow-api-types": "~2.5.2",
         "@donmahallem/flowapi": "~5.1.0",
         "body-parser": "~1.19.0",
         "express": "~4.17.1",
